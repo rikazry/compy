@@ -1,0 +1,14 @@
+# Local HDF5 data files
+*h5
+
+# Custom configuration files
+*conf
+
+# Compiled python files
+*.pyc
+
+# Ctags files
+tags
+
+# Build files of this package
+*egg-info
