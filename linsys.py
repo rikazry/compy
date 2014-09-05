@@ -11,6 +11,12 @@ def solve_elimin_Gauss(A, b):
     please pass in A.copy() and b.copy() if don't want func to write to A,b
     please define A, b with detype = float for accuracy
     eg. A = numpy.identity(3,float), b = numpy.array(range(3),float)
+
+    assume row pivoting performed 
+    otherwise should add row pivoting in first level itteration
+    by swapping rows according to relative size of pivot item in each row
+
+    pivot is not desirable when matrix is positive definite, symetric or banded
     """
     n = len(b)
     for i in range(0, n-1):
