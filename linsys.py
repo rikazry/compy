@@ -55,3 +55,18 @@ def LUdecomp_Doolittle(A):
                 A[j, i+1:n] = A[j, i+1:n] - lam*A[i, i+1:n]
                 A[j, i] = lam
     return A
+
+def LUdecomp_Choleski(A):
+    """LU decomposition using Choleski's Method
+    Assumptions of A: 1) symmetric; 2) positive definite
+    A = LL' = array([[l_11^2,   l_11*l_21,            l_11*l_31],
+                     [l_11*l_21,l_21^2 + l_22^2,      l_21*l_31 + l_22*l_32],
+                     [l_11*l_31,l_21*l_31 + l_22*l_32,l_31^2 + l_32^2 + l_33^2]])
+    """
+    n = len(A)
+    for i in range(n):
+        A[i, i]= np.sqrt(A[i, i] - np.dot(A[i, 0:i], A[i, 0:i]))
+        for j in range(i+1, n):
+            A[j, i] = (A[j, i] - np.dot(A[j, 0:i], A[i, 0:i]))/A[i, i]
+        A[i, i+1:n] = 0.0
+    return A
