@@ -4,8 +4,9 @@
 # Custom configuration files
 *conf
 
-# Compiled python files
+# Compiled and temporary files
 *.pyc
+*.swp
 
 # Ctags files
 tags
