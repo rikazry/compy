@@ -1,6 +1,11 @@
 from sympy.polys.specialpolys import interpolating_poly
 from sympy.abc import x
 
+#fit n+1 data points to a function contains m+1 variable parameters
+# n=m -> interpolation
+# n>m -> curve fitting with spread of data about fitted curv:sigma=sqrt(S/(n-m))
+#solving cubic spline requires LU decomposition for banded matrix
+
 def inter_poly(X, Y, symbol = x, algo = 'Lr', simplify = True):
     """
     polynomial interpolation using Lagrange's Methods
