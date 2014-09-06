@@ -23,18 +23,42 @@ required interest rate:
 """
 import numpy as np
 
-class FI(object):
+class Annuity(FixIncome):
+    def __init__(self, ordinary = True):
+        """
+        ordinary annuities -> type1, annuity due -> type0
+        """
+        if ordinary:
+            self.type = 1
+        else:
+            self.type = 0
+    
+    def cpt_value(self, mat, pmt, r, lag0 = 1, lag = 0):
+        self.maturity = mat
+        self.pmt = pmt
+        self.fv = _sumgs(a1 = pmt, n = mat, r = 1+r)
+        # adjust fv by 1 year for annuity due
+        if self.type == 0:
+            self.fv = _fv(pv = self.fv, _y = r, n = 1)
+        # calculate pv according to first payment time
+        self.pv = _pv(fv = self.fv, _y = r, n = mat + lag0 - 1)
+        # adjust fv by cashing out time
+        if lag:
+            self.fv = _fv(pv = self.fv, _y = r, n = lag)
+        return self.fv, self.pv
+
+class FixIncome(object):
    
-    def ear(self, nom_rate, num_comp = 1, cc = False):
+    def cpt_ear(self, nom_rate, num_comp = 1, cc = False):
         return _ear(nom_rate, num_comp = 1, cc = False)
 
-    def fv(self, pv, _y, n):
+    def cpt_fv(self, pv, _y, n):
         return _fv(pv, _y, n)
 
-    def pv(self, fv, _y, n):
+    def cpt_pv(self, fv, _y, n):
         return _pv(fv, _y, n)
 
-    def fvf(self, _y, n):
+    def cpt_fvf(self, _y, n):
         return _fvf(_y, n)
 
 def _ear(nom_rate, num_comp = 1, cc = False):
@@ -76,3 +100,13 @@ def _fvf(_y, n):
     future value factor
     """
     return np.power(1 + _y, n)
+
+def _sumgs(r, n = 0, a1 = 1, series = False):
+    """
+    sum of geometric sequence
+    """
+    if series:
+        return a1/(1-r)
+    else:
+        return a1*(1-np.power(r,n))/(1-r)
+
