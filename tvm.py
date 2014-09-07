@@ -9,9 +9,9 @@ FV = future value
 PMT = annuity payments or constant perodic cash flow
 
 interest rate:
-    required rate of return
-    discount rate
-    opportunity cost
+    *rate of return* required in equilibrium for a particular investment 
+    *discount rate* of future cash flows
+    *opportunity cost* of consuming now rather than saving and investing
 
 required interest rate:
     nominal risk-free rate (e.g. T-bill):
@@ -41,6 +41,7 @@ class FixIncome(object):
 
 class Perpetuity(FixIncome):
     """
+    annuity with infinite lives
     eg. British concul bonds, preferred stocks
     pv = pmt / r
     """
@@ -55,6 +56,10 @@ class Perpetuity(FixIncome):
         return pmt/pv
 
 class Annuity(FixIncome):
+    """
+    ordinary annuity cash flows occur at the end of each time period
+    annuity due cash flows occur at the beginning
+    """
     def __init__(self, ordinary = True):
         """
         ordinary annuities -> type1, annuity due -> type0
