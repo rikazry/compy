@@ -63,6 +63,10 @@ class Annuity(FixIncome):
             self.fv = _fv(pv = self.fv, _y = r, n = lag)
         return self.fv, self.pv
 
+    def cpt_pmt_fv(self, mat, fv, r):
+        self.pmt = self.cpt_pmt(mat, self.cpt_pv(fv = fv, _y = r, n = mat), r)
+        return self.pmt
+
     def cpt_pmt(self, mat, pv, r):
         """
         loan payment and amortization schedule calculation
@@ -74,6 +78,10 @@ class Annuity(FixIncome):
         return self.pmt
 
     def cpt_amt(self):
+        """
+        amortization schedule construction
+        on top of cpt_pmt
+        """
         label = ['begin_balance','payment','interest','principal','end_balance']
         df = pd.DataFrame(np.zeros((self.maturity, len(label))), columns = label)
         balance = self.pv
