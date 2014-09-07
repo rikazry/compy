@@ -23,6 +23,21 @@ required interest rate:
 """
 import numpy as np
 
+class Perpetuity(FixIncome):
+    """
+    eg. British concul bonds, preferred stocks
+    pv = pmt / r
+    """
+    def cpt_pv(self, pmt, r):
+        self.pmt = pmt
+        self.pv = _sumgs(r = 1/(1+r), a1 = pmt/(1+r), series = True) 
+        return self.pv
+
+    def cpt_r(self, pmt, pv):
+        self.pmt = pmt
+        self.pv = pv
+        return pmt/pv
+
 class Annuity(FixIncome):
     def __init__(self, ordinary = True):
         """
