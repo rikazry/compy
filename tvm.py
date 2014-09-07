@@ -23,6 +23,7 @@ required interest rate:
 """
 import numpy as np
 import pandas as pd
+from scipy.optimize import newton
 
 class FixIncome(object):
    
@@ -76,6 +77,20 @@ class Annuity(FixIncome):
         if lag:
             self.fv = _fv(pv = self.fv, _y = r, n = lag)
         return self.fv, self.pv
+
+    def cpt_r(self, mat, pmt, value, fv = True):
+        self.maturity = mat
+        self.pmt = pmt
+        if fv:
+            self.fv = value
+            def func(r):
+                return _sumgs(a1 = pmt, n = mat, r = 1+r) - value
+        else:
+            self.pv = value
+            def func(r):
+                return _sumgs(a1 = pmt, n = mat, r = 1/(1+r)) - value*(1+r)
+        r = newton(func, 0.05)
+        return r
 
     def cpt_mat_fv(self, pmt, fv, r):
         self.pmt = pmt
