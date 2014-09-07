@@ -24,6 +24,20 @@ required interest rate:
 import numpy as np
 import pandas as pd
 
+class FixIncome(object):
+   
+    def cpt_ear(self, nom_rate, num_comp = 1, cc = False):
+        return _ear(nom_rate, num_comp = 1, cc = False)
+
+    def cpt_fv(self, pv, _y, n):
+        return _fv(pv, _y, n)
+
+    def cpt_pv(self, fv, _y, n):
+        return _pv(fv, _y, n)
+
+    def cpt_fvf(self, _y, n):
+        return _fvf(_y, n)
+
 class Perpetuity(FixIncome):
     """
     eg. British concul bonds, preferred stocks
@@ -63,6 +77,18 @@ class Annuity(FixIncome):
             self.fv = _fv(pv = self.fv, _y = r, n = lag)
         return self.fv, self.pv
 
+    def cpt_mat_fv(self, pmt, fv, r):
+        self.pmt = pmt
+        self.fv = fv
+        self.maturity = _ngs(r = 1 + r, s = fv, a1 = pmt)
+        return self.maturity
+
+    def cpt_mat(self, pmt, pv, r):
+        self.pmt = pmt
+        self.pv = pv
+        self.maturity = _ngs(r = 1/(1+r), s = pv*(1+r), a1 = pmt)
+        return self.maturity
+
     def cpt_pmt_fv(self, mat, fv, r):
         self.pmt = self.cpt_pmt(mat, self.cpt_pv(fv = fv, _y = r, n = mat), r)
         return self.pmt
@@ -99,20 +125,6 @@ class Annuity(FixIncome):
         self.amt = df
         return self.amt
     
-class FixIncome(object):
-   
-    def cpt_ear(self, nom_rate, num_comp = 1, cc = False):
-        return _ear(nom_rate, num_comp = 1, cc = False)
-
-    def cpt_fv(self, pv, _y, n):
-        return _fv(pv, _y, n)
-
-    def cpt_pv(self, fv, _y, n):
-        return _pv(fv, _y, n)
-
-    def cpt_fvf(self, _y, n):
-        return _fvf(_y, n)
-
 def _ear(nom_rate, num_comp = 1, cc = False):
     """
     effective annual rate
@@ -167,3 +179,6 @@ def _a1gs(r, s, n = 0, series = False):
         return s*(1-r)
     else:
         return s*(1-r)/(1-np.power(r,n))
+
+def _ngs(r, s, a1 = 1):
+    return np.log(1 - s*(1-r)/a1) / np.log(r)
