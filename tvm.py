@@ -22,6 +22,7 @@ required interest rate:
     + maturity risk premium
 """
 import numpy as np
+import pandas as pd
 
 class Perpetuity(FixIncome):
     """
@@ -62,6 +63,34 @@ class Annuity(FixIncome):
             self.fv = _fv(pv = self.fv, _y = r, n = lag)
         return self.fv, self.pv
 
+    def cpt_pmt(self, mat, pv, r):
+        """
+        loan payment and amortization schedule calculation
+        """
+        self.maturity = mat
+        self.pv = pv
+        self.pmt = _a1gs(r = 1/(1+r), s = pv*(1+r), n = mat)
+        self.r = r
+        return self.pmt
+
+    def cpt_amt(self):
+        label = ['begin_balance','payment','interest','principal','end_balance']
+        df = pd.DataFrame(np.zeros((self.maturity, len(label))), columns = label)
+        balance = self.pv
+        n = self.maturity
+        for i in range(n):
+            df.ix[i,0] = balance
+            df.ix[i,1] = self.pmt
+            df.ix[i,2] = balance*self.r
+            df.ix[i,3] = self.pmt - df.ix[i,2]
+            balance -= df.ix[i, 3]
+            df.ix[i,4] = balance
+        err = df.ix[n-1, 4]
+        df.ix[n-1, [1,3]] += (err, err)
+        df.ix[n-1, 4] -= err
+        self.amt = df
+        return self.amt
+    
 class FixIncome(object):
    
     def cpt_ear(self, nom_rate, num_comp = 1, cc = False):
@@ -125,3 +154,8 @@ def _sumgs(r, n = 0, a1 = 1, series = False):
     else:
         return a1*(1-np.power(r,n))/(1-r)
 
+def _a1gs(r, s, n = 0, series = False):
+    if series:
+        return s*(1-r)
+    else:
+        return s*(1-r)/(1-np.power(r,n))
