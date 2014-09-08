@@ -31,7 +31,62 @@ def irr(cf0, *args):
         return npv(r, cf0, *args)
     return newton(func, 0.05)
 
-def hpr(begin_value, end_value, *args):
+def hpy2bey(mat, hpy):
+    """bond equivalent yield: semiannual discount rate
+    """
+    return 2*(np.power(1+hpy, 0.5/mat)-1)
+
+def bdy2mmy(t, bdy):
+    return hpy2mmy(t, bdy2hpy(t, bdy))
+
+def mmy2eay(t, mmy):
+    return hpy2eay(t, mmy2hpy(t, mmy))
+
+def bdy2hpy(t, bdy):
+    """
+    HPY = D/(F-D) = 1/(F/D -1), BDY = D/F * 360/t
+    """
+    return 1/(360/(t*bdy) - 1)
+
+def hpy2mmy(t, hpy):
+    return hpy*360/t
+
+def mmy2hpy(t, mmy):
+    return mmy*t/360.
+
+def hpy2eay(t, hpy):
+    return np.power(1+hpy, 365./t) - 1
+
+def _bdy(t,D,F,*args):
+    """bank discount yield
+    
+    parameters
+    ----------
+    D: dollar discount, which is equal to the difference between the face value and purchase price
+    F: face value
+    t: number of days remainning until maturity
+    360: bank convention of number of days in a year
+
+    returns
+    -------
+    rbd: annualized yield on a bank discont basis
+    """
+    cf = 0
+    for arg in args:
+        cf += arg
+    return ((D+cf)/F)*(360/t)
+
+def _mmy(t, P0, F, *args):
+    """money market yield
+    """
+    return hpy2mmy(t, _hpr(P0, F, *args))
+
+def _eay(t, P0, F, *args):
+    """effective annual yield
+    """
+    return hpy2eay(t, _hpr(P0,F, *args))
+
+def _hpr(begin_value, end_value, *args):
     """holding period return
     """
     cf = 0
