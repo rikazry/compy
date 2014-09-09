@@ -57,6 +57,12 @@ def mmy2hpy(t, mmy):
 def hpy2eay(t, hpy):
     return np.power(1+hpy, 365./t) - 1
 
+def hpr2ccr(hpr):
+    return np.log(1+hpr)
+
+def ccr2hpr(ccr):
+    return np.exp(ccr) - 1
+
 def _bdy(t,D,F,*args):
     """bank discount yield
     
