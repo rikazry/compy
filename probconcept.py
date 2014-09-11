@@ -133,6 +133,15 @@ def test_ind(a1, a2, var1, var2, n1, n2, dmean = 0, sig = None, eqvar = True, ta
     x = np.divide(d, denom)
     p = pscore(x = x, tail = tail, df = df)
     return decirule(x, p, sig)
+
+def test_rel(a1, a2, dmean = 0, sig = None, tail = 2, thresz = 30):
+    n = len(a1)
+    if n != len(b2):
+        raise ValueError('input arrays with different lengths')
+    d = (a1 - a2).astype(np.float64)
+    avg = np.mean(d)
+    std = np.std(d, ddof = 1)
+    return test_1samp(a = avg, popmean = dmean, std = std, n = n, sig = sig, popstd = False, normal = True, tail = tail, thresz = thresz)
 """
 data-mining bias:
     out-of-sample test to avoid
