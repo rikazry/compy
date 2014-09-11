@@ -51,22 +51,50 @@ normal + unknown variance       t-statistic     t-statistic more conservative
 nonnormal + known variance      N/A             z-statistic
 nonnormal + unknown variance    N/A             t-statistic more conservative
 """
-def test_1sample_raw(a, popmean, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
+def test_1samp_raw(a, popmean, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
     n = len(a)
     avg = np.mean(a)
     if popstd:
         std = popstd
     else:
         std = np.std(a, ddof = 1)
-    return test_1samp(a = avg, popmean = popmean, std = std, sampsz = n, sig = sig, popstd = popstd, normal = normal, tail = tail, thresz = thresz)
+    return test_1samp(a = avg, popmean = popmean, std = std, n = n, sig = sig, popstd = popstd, normal = normal, tail = tail, thresz = thresz)
 
-def test_1samp(a, popmean, std, sampsz, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
-    if sampsz < thresz and not normal:
+def test_1samp(a, popmean, std, n, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
+    if n < thresz and not normal:
         raise Exception("Test for non-normal small sample not applicable")
     d = a - popmean
-    denom = np.divide(std, np.sqrt(float(sampsz)))
+    denom = np.divide(std, np.sqrt(float(n)))
     x = np.divide(d, denom)
     if popstd:
+        p = pscore(x = x, tail = tail)
+    else:
+        df = n - 1
+        p = pscore(x = x, tail = tail, df = df)
+    return decirule(x, p, sig)
+
+def decirule(x, p, sig = None):
+    if sig:
+        if p < sig:
+            return x, p, 'reject'
+        else:
+            return x, p, 'cannot reject'
+    else:
+        return x, p
+
+def pscore(x, tail = 2, df = None):
+    if df:
+        print "t statistical test"
+        if tail == 2:
+            print "2 tail"
+            p = st.t.sf(np.abs(x), df)*2
+        if tail == -1:
+            print "left tail"
+            p = st.t.cdf(x, df)
+        if tail == 1:
+            print "right tail"
+            p = st.t.sf(x, df)
+    else:
         print "z statistical test"
         if tail == 2:
             print "2 tail"
@@ -77,26 +105,34 @@ def test_1samp(a, popmean, std, sampsz, sig = None, popstd = False, normal = Tru
         if tail == 1:
             print "right tail"
             p = st.norm.sf(x)
+    return p
+
+def test_ind_raw(a1, a2, dmean = 0, sig = None, eqvar = True, tail = 2):
+    n1 = len(a1)
+    n2 = len(a2)
+    avg1 = np.mean(a1)
+    avg2 = np.mean(a2)
+    var1 = np.var(a1, ddof = 1)
+    var2 = np.var(a2, ddof = 2)
+    return test_ind(a1 = avg1, a2 = avg2, var1 = var1, var2 = var2, n1 = n1, n2 = n2, dmean = dmean, sig = sig, eqvar = eqvar, tail = tail)
+
+def test_ind(a1, a2, var1, var2, n1, n2, dmean = 0, sig = None, eqvar = True, tail = 2):
+    d = a1 - a2 - dmean
+    if eqvar:
+        # pooled variance
+        df = n1 + n2 - 2
+        varp = np.divide(((n1 - 1) * var1 + (n2 - 1) * var2), float(df))
+        denom = np.sqrt(np.divide(varp, float(n1)) + np.divide(varp, float(n2)))
     else:
-        print "t statistical test"
-        df = sampsz - 1
-        if tail == 2:
-            print "2 tail"
-            p = st.t.sf(np.abs(x), df)*2
-        if tail == -1:
-            print "left tail"
-            p = st.t.cdf(x, df)
-        if tail == 1:
-            print "right tail"
-            p = st.t.sf(x, df)
-    if sig:
-        if p < sig:
-            return x, p, 'reject'
-        else:
-            return x, p, 'cannot reject'
-    else:
-        return x, p
- 
+        # Welch's test
+        vn1 = np.divide(var1, float(n1))
+        vn2 = np.divide(var2, float(n2))
+        varp = vn1 + vn2
+        df = np.divide(np.power(varp, 2), np.divide(np.power(vn1, 2), n1-1) + np.divide(np.power(vn2, 2), n2-2))
+        denom = np.sqrt(varp)
+    x = np.divide(d, denom)
+    p = pscore(x = x, tail = tail, df = df)
+    return decirule(x, p, sig)
 """
 data-mining bias:
     out-of-sample test to avoid
