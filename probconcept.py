@@ -1,4 +1,5 @@
-
+import numpy as np
+import scipy.stats as st
 """
 shortfall risk: the probability that a portfolio value or return will fall below a threshold over a given time period
 
@@ -8,10 +9,10 @@ maximizes SFRatio
 """
 
 def sfratio(rp_mean, rp_std, rth):
-    return (rp_mean - rth)/rp_std
+    return np.divide(rp_mean - rth,rp_std)
 
 def sharpe(rp_mean, rp_std, rf):
-    return (rp_mean - rf)/rp_std
+    return np.divide(rp_mean - rf,rp_std)
 
 """
 Monte Carlo is often applied to:
@@ -50,6 +51,35 @@ normal + unknown variance       t-statistic     t-statistic more conservative
 nonnormal + known variance      N/A             z-statistic
 nonnormal + unknown variance    N/A             t-statistic more conservative
 """
+def test_1samp(a, popmean, std, sampsz, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
+    if sampsz < thresz and not normal:
+        raise Exception("Test for non-normal small sample not applicable")
+    d = a - popmean
+    denom = np.divide(std, np.sqrt(float(sampsz)))
+    x = np.divide(d, denom)
+    if popstd:
+        if tail == 2:
+            p = st.norm.sf(np.abs(x))*2
+        if tail == -1:
+            p = st.norm.cdf(x)
+        if tail == 1:
+            p = st.norm.sf(x)
+    else:
+        df = sampsz - 1
+        if tail == 2:
+            p = st.t.sf(np.abs(x), df)*2
+        if tail == -1:
+            p = st.t.cdf(x)
+        if tail == 1:
+            p = st.sf(x)
+    if sig:
+        if p < sig:
+            return x, p, 'reject'
+        else:
+            return x, p, 'accept'
+    else:
+        return x, p
+ 
 """
 data-mining bias:
     out-of-sample test to avoid
