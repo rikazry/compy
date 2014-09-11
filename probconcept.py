@@ -51,6 +51,15 @@ normal + unknown variance       t-statistic     t-statistic more conservative
 nonnormal + known variance      N/A             z-statistic
 nonnormal + unknown variance    N/A             t-statistic more conservative
 """
+def test_1sample_raw(a, popmean, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
+    n = len(a)
+    avg = np.mean(a)
+    if popstd:
+        std = popstd
+    else:
+        std = np.std(a, ddof = 1)
+    return test_1samp(a = avg, popmean = popmean, std = std, sampsz = n, sig = sig, popstd = popstd, normal = normal, tail = tail, thresz = thresz)
+
 def test_1samp(a, popmean, std, sampsz, sig = None, popstd = False, normal = True, tail = 2, thresz = 30):
     if sampsz < thresz and not normal:
         raise Exception("Test for non-normal small sample not applicable")
@@ -58,25 +67,33 @@ def test_1samp(a, popmean, std, sampsz, sig = None, popstd = False, normal = Tru
     denom = np.divide(std, np.sqrt(float(sampsz)))
     x = np.divide(d, denom)
     if popstd:
+        print "z statistical test"
         if tail == 2:
+            print "2 tail"
             p = st.norm.sf(np.abs(x))*2
         if tail == -1:
+            print "left tail"
             p = st.norm.cdf(x)
         if tail == 1:
+            print "right tail"
             p = st.norm.sf(x)
     else:
+        print "t statistical test"
         df = sampsz - 1
         if tail == 2:
+            print "2 tail"
             p = st.t.sf(np.abs(x), df)*2
         if tail == -1:
-            p = st.t.cdf(x)
+            print "left tail"
+            p = st.t.cdf(x, df)
         if tail == 1:
-            p = st.sf(x)
+            print "right tail"
+            p = st.t.sf(x, df)
     if sig:
         if p < sig:
             return x, p, 'reject'
         else:
-            return x, p, 'accept'
+            return x, p, 'cannot reject'
     else:
         return x, p
  
