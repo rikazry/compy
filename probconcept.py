@@ -67,7 +67,7 @@ def test_1samp(a, popmean, std, n, sig = None, popstd = False, normal = True, ta
     denom = np.divide(std, np.sqrt(float(n)))
     x = np.divide(d, denom)
     if popstd:
-        p = pscore(x = x, tail = tail)
+        p = pscore(x = x, tail = tail, test = 'z')
     else:
         df = n - 1
         p = pscore(x = x, tail = tail, df = df)
@@ -82,34 +82,34 @@ def decirule(x, p, sig = None):
     else:
         return x, p
 
-def pscore(x, tail = 2, df = None, test = 't'):
-    if df:
-        if test == 't':
-            print "t statistical test"
-            dist = st.t
-        if test == 'chi2':
-            print "chi square test"
-            dist = st.chi2
-        if tail == 2:
-            print "2 tail"
-            p = np.min(dist.sf(np.abs(x), df)*2, 1)
-        if tail == -1:
-            print "left tail"
-            p = dist.cdf(x, df)
-        if tail == 1:
-            print "right tail"
-            p = dist.sf(x, df)
-    else:
-        print "z statistical test"
-        if tail == 2:
-            print "2 tail"
-            p = np.min(st.norm.sf(np.abs(x))*2, 1)
-        if tail == -1:
-            print "left tail"
-            p = st.norm.cdf(x)
-        if tail == 1:
-            print "right tail"
-            p = st.norm.sf(x)
+def pscore(x, tail = 2, df = None, df2 = None, test = 't'):
+    if tail == 2:
+        x = np.abs(x)
+    if not df:
+        print "z test"
+        dist = st.norm
+        args = x,
+    elif test == 't':
+        print "t test"
+        dist = st.t
+        args = x, df
+    elif test == 'chi2':
+        print "chi square test"
+        dist = st.chi2
+        args = x, df
+    elif test == 'f':
+        print "f test"
+        dist = st.f
+        args = x, df, df2
+    if tail == 2:
+        print "2 sided"
+        p = min(dist.sf(*args)*2, 1)
+    if tail == -1:
+        print "left tail"
+        p = dist.cdf(*args)
+    if tail == 1:
+        print "right tail"
+        p = dist.sf(*args)
     return p
 
 def test_ind_raw(a1, a2, dmean = 0, sig = None, eqvar = True, tail = 2):
@@ -157,6 +157,21 @@ def test_chi2(var, popvar, n, sig = None, tail = 2):
     df = n - 1
     x = np.divide(float(df)*var, popvar)
     p = pscore(x = x, tail = tail, df = df, test = 'chi2')
+    return decirule(x, p, sig)
+
+def test_f_raw(a1, a2, sig = None, tail = 1):
+    n1, n2 = len(a1), len(a2)
+    var1, var2 = np.var(a1, ddof = 1), np.var(a2, ddof = 1)
+    return test_f(var1 = var1, var2 = var2, n1 = n1, n2 = n2, sig = sig, tail = tail)
+
+def test_f(var1, var2, n1, n2, sig = None, tail = 1):
+    df1, df2 = n1 - 1, n2 - 1
+    if var1 > var2:
+        vn, vd, dfn, dfd = var1, var2, df1, df2
+    else:
+        vn, vd, dfn, dfd = var2, var1, df2, df1
+    x = np.divide(vn, vd)
+    p = pscore(x = x, tail = tail, df = dfn, df2 = dfd, test = 'f')
     return decirule(x, p, sig)
 """
 data-mining bias:
