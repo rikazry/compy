@@ -82,23 +82,28 @@ def decirule(x, p, sig = None):
     else:
         return x, p
 
-def pscore(x, tail = 2, df = None):
+def pscore(x, tail = 2, df = None, test = 't'):
     if df:
-        print "t statistical test"
+        if test == 't':
+            print "t statistical test"
+            dist = st.t
+        if test == 'chi2':
+            print "chi square test"
+            dist = st.chi2
         if tail == 2:
             print "2 tail"
-            p = st.t.sf(np.abs(x), df)*2
+            p = np.min(dist.sf(np.abs(x), df)*2, 1)
         if tail == -1:
             print "left tail"
-            p = st.t.cdf(x, df)
+            p = dist.cdf(x, df)
         if tail == 1:
             print "right tail"
-            p = st.t.sf(x, df)
+            p = dist.sf(x, df)
     else:
         print "z statistical test"
         if tail == 2:
             print "2 tail"
-            p = st.norm.sf(np.abs(x))*2
+            p = np.min(st.norm.sf(np.abs(x))*2, 1)
         if tail == -1:
             print "left tail"
             p = st.norm.cdf(x)
@@ -134,7 +139,7 @@ def test_ind(a1, a2, var1, var2, n1, n2, dmean = 0, sig = None, eqvar = True, ta
     p = pscore(x = x, tail = tail, df = df)
     return decirule(x, p, sig)
 
-def test_rel(a1, a2, dmean = 0, sig = None, tail = 2, thresz = 30):
+def test_rel_raw(a1, a2, dmean = 0, sig = None, tail = 2, thresz = 30):
     n = len(a1)
     if n != len(b2):
         raise ValueError('input arrays with different lengths')
@@ -142,6 +147,17 @@ def test_rel(a1, a2, dmean = 0, sig = None, tail = 2, thresz = 30):
     avg = np.mean(d)
     std = np.std(d, ddof = 1)
     return test_1samp(a = avg, popmean = dmean, std = std, n = n, sig = sig, popstd = False, normal = True, tail = tail, thresz = thresz)
+
+def test_chi2_raw(a, popvar, sig = None, tail = 2):
+    n = len(a)
+    var = np.var(a, ddof = 1)
+    return test_chi2(var = var, popvar = popvar, n = n, sig = sig, tail = tail)
+
+def test_chi2(var, popvar, n, sig = None, tail = 2):
+    df = n - 1
+    x = np.divide(float(df)*var, popvar)
+    p = pscore(x = x, tail = tail, df = df, test = 'chi2')
+    return decirule(x, p, sig)
 """
 data-mining bias:
     out-of-sample test to avoid
