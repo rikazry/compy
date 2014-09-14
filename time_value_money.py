@@ -69,19 +69,23 @@ class Annuity(FixIncome):
         else:
             self.type = 0
     
-    def cpt_value(self, mat, pmt, r, lag0 = 1, lag = 0):
-        self.maturity = mat
-        self.pmt = pmt
-        self.fv = _sumgs(a1 = pmt, n = mat, r = 1+r)
+    def cpt_value(self, mat, pmt, r, lag0 = 1, lag = 0, svarg = True, svrst = True):
+        fv = _sumgs(a1 = pmt, n = mat, r = 1+r)
         # adjust fv by 1 year for annuity due
         if self.type == 0:
-            self.fv = _fv(pv = self.fv, _y = r, n = 1)
+            fv = _fv(pv = fv, _y = r, n = 1)
         # calculate pv according to first payment time
-        self.pv = _pv(fv = self.fv, _y = r, n = mat + lag0 - 1)
+        pv = _pv(fv = fv, _y = r, n = mat + lag0 - 1)
         # adjust fv by cashing out time
         if lag:
-            self.fv = _fv(pv = self.fv, _y = r, n = lag)
-        return self.fv, self.pv
+            fv = _fv(pv = fv, _y = r, n = lag)
+        if svarg:
+            self.maturity = mat
+            self.pmt = pmt
+        if svrst:
+            self.pv = pv
+            self.fv = fv
+        return fv, pv
 
     def cpt_r(self, mat, pmt, value, fv = True):
         self.maturity = mat
@@ -144,7 +148,21 @@ class Annuity(FixIncome):
         df.ix[n-1, 4] -= err
         self.amt = df
         return self.amt
-    
+
+class Bond(Annuity):
+    def __init__(self, freq = 2, par = 100):
+        self.freq = freq
+        self.par = par
+        self.type = 1
+
+    def cpt_price(self, mat, cp, r):
+        mata = mat * self.freq
+        cpa = np.divide(cp, float(self.freq))
+        ra = np.divide(r, float(self.freq))
+        pfv, ppv = self.cpt_value(mat = mata, pmt = cpa, r = ra, svarg = False, svrst = False)
+        cpv = _pv(fv = self.par, _y = ra, n = mata)
+        return (pfv + self.par, ppv + cpv)
+
 def _ear(nom_rate, num_comp = 1, cc = False):
     """
     effective annual rate
@@ -177,7 +195,7 @@ def _fv(pv, _y, n):
     return pv*_fvf(_y, n)
 
 def _pv(fv, _y, n):
-    return fv/fvf(_y, n)
+    return fv/_fvf(_y, n)
 
 def _fvf(_y, n):
     """
