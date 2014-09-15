@@ -98,6 +98,12 @@ def pscore(x, tail = 2, df = None, df2 = None, test = 't'):
         p = dist.sf(*args)
     return p
 
+def test_corr(corr, n, sig = None, tail = 2):
+    df = n - 2
+    x = np.divide(corr * np.sqrt(df), np.sqrt(1 - corr**2))
+    p = pscore(x = x, tail = tail, df = df)
+    return decirule(x, p, sig)
+
 def test_ind_raw(a1, a2, dmean = 0, sig = None, eqvar = True, tail = 2):
     n1 = len(a1)
     n2 = len(a2)
