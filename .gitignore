@@ -4,6 +4,9 @@
 # Custom configuration files
 *conf
 
+# execution logs
+*.log
+
 # Compiled and temporary files
 *.pyc
 *.swp
