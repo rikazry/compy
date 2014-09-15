@@ -76,3 +76,8 @@ def LUdecomp_Choleski(A):
             A[j, i] = (A[j, i] - np.dot(A[j, 0:i], A[i, 0:i]))/A[i, i]
         A[i, i+1:n] = 0.0
     return A
+
+"""
+QR decomposition: 
+unique pair of orthogonal matrix and upper_triangular matrix w/ positive diagonal elements
+"""
