@@ -32,11 +32,28 @@ Bias-Variance Trade-off of prediction models:
 Linear Regression:
 
 Assumptions:
-    * A linear relationship exists between the dependent and independent variable
+    * A linear relationship exists between the dependent and independent variables
     * No perfect multicollinearity for multiple regressors: corr(X_i, X_j) != 1 or -1
+        ideal scenario is when predictors are uncorrelated: a balanced design
+        problems of correlation:
+            variance of all coefficients tends to increase
+            interpretations of effects of changing 1 variable become hazardous
     * The independent variable is uncorrelated with the residuals
     * The expected value of the residual tearm is zero: E(e)=0
-    * The variance of the residual term is constant, not heteroskedastic: E(e_i^2)=const
+    * The variance of the residual term is constant across observations, not heteroskedastic: E(e_i^2)=const
+        unconditional heteroskedasticity:
+            not related to the level (value) of independent variables
+            usually causes no major problems
+        conditional heteroskedasticity:
+            conditional on the independent variables
+            effects:
+                standard errors are usually unreliable estimates
+                codfficient estimates aren't affected
+                t-test is therefore affected
+                f-tst is also unreliable
+            detection:
+                examine scatter plots of residuals
+                Breusch-Pagan chi-square test
     * The residual term is independently distributed, no autocorrelation: E(e_i * e_j) = 0 for i != j
     * The residual term is normally distributed
 
@@ -57,26 +74,44 @@ Accuracy Assessing:
         * Total Sum of Squares (SST): 
             measures the total variation in the dependent variable
             SST = Var(Y) * (n-1)
-            df = n - 1
+            df = n - 1 
         * Regression Sum of Squares (RSS): 
             measures the variation in the dependent variable that is explained by the independent variable
-            df = 1
+            df = k 
         * Sum of Squared Errors (SSE): 
             measures the unexplained variantion in the dependent variables
-            df = n-2
+            df = n - k - 1
                 Standard Deviation of Regression Error (SEE):
                     SEE^2 = SSE / df
         * SST = RSS + SSE
           total variation = explained variation + unexplained variation
-
     R Square:
         R^2 = RSS/SST
         equals to squared correlation coefficient if only 1 regressor
+    Adjusted R Square:
+        R^2 almost always increases as variables are added to the model
+            even if the marginal contribution of the new variables is not significant
+        R_a^2 = 1 - (1-R^2) * ((n-1) / (n-k-1))
     F Stats:
         whether at least 1 independent variable explains a significant portion
         of the variation of the dependent variable
         F = (RSS / k) / (SSE / (n-1-k))
         F-test is always one-tailed, tests all independent variables as a group
+
+Variable Selection:
+    All Subsets/ Best Subsets Regression:
+        Choose between all based on some criterion that balances training error with model size
+    Forward Selection:
+        1) null model
+        2) fit k simple linear regresions and add the variable with lowest SSE
+        3) add 1 more variable with lowest 2-variable SSE
+        4) stopping rule:
+            eg. when all remaining variables have a p-value above a threshold
+    Backward Selection:
+        1) all variables
+        2) remove the variable with the largest p-value
+        3) remove 1 more variable with the largest p-value in this (k-1)-fit
+        4) stopping rule
 
 Limitations:
     * Parameter Instability: Linear relationships can change over time.
