@@ -36,14 +36,52 @@ Assumptions:
     * No perfect multicollinearity for multiple regressors: corr(X_i, X_j) != 1 or -1
     * The independent variable is uncorrelated with the residuals
     * The expected value of the residual tearm is zero: E(e)=0
-    * The variance of the residual term is constant for all observations: E(e_i^2)=const
-    * The residual term is independently distributed: E(e_i * e_j) = 0 for i != j
+    * The variance of the residual term is constant, not heteroskedastic: E(e_i^2)=const
+    * The residual term is independently distributed, no autocorrelation: E(e_i * e_j) = 0 for i != j
     * The residual term is normally distributed
 
-Ordinary Least Square approach: minimizes Residual Sum of Squares
+Ordinary Least Square approach: minimizes Sum of Squared Errors (residual)
     min f(b) = min (Y-Xb)'(Y-Xb)
     df/db = -2X'Y + 2X'Xb = 0 -> (X'X)b = X'Y
     beta = cov(X,Y)/Var(X)
+    intercept = mean(Y) - beta*mean(X)
+        regression line passes through a point w/ coordinates equal to the mean
+        of the independent and dependent variables
+
+Accuracy Assessing:
+    Standard Errors to compute Confidence Interval and conduct Hyothesis Testing:
+        SE(beta)^2 = Var(Y-f(x)) / SumSquaredDeviation(X)
+        SE(intercept)^2 = Var(Y-f(x)) * ( 1/n + mean(X)^2 / SumSquaredDeviation(X) )
+        df fot t-dist is n-1-k for k regressors
+    ANOVA:
+        * Total Sum of Squares (SST): 
+            measures the total variation in the dependent variable
+            SST = Var(Y) * (n-1)
+            df = n - 1
+        * Regression Sum of Squares (RSS): 
+            measures the variation in the dependent variable that is explained by the independent variable
+            df = 1
+        * Sum of Squared Errors (SSE): 
+            measures the unexplained variantion in the dependent variables
+            df = n-2
+                Standard Deviation of Regression Error (SEE):
+                    SEE^2 = SSE / df
+        * SST = RSS + SSE
+          total variation = explained variation + unexplained variation
+
+    R Square:
+        R^2 = RSS/SST
+        equals to squared correlation coefficient if only 1 regressor
+    F Stats:
+        whether at least 1 independent variable explains a significant portion
+        of the variation of the dependent variable
+        F = (RSS / k) / (SSE / (n-1-k))
+        F-test is always one-tailed, tests all independent variables as a group
+
+Limitations:
+    * Parameter Instability: Linear relationships can change over time.
+    * If the assumptions underlying regression analysis do hot hold, the interpretation and tests of hypotheses may not be valid. 
+    * Even if the regression model accurately reflects the historical relationship, its usefulness in investment analysis will be limited if  other market participants are also aware of act on this evidence.
 """
 
 import numpy as np
