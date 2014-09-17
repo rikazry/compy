@@ -170,6 +170,24 @@ Limitations:
     * Parameter Instability: Linear relationships can change over time.
     * If the assumptions underlying regression analysis do hot hold, the interpretation and tests of hypotheses may not be valid. 
     * Even if the regression model accurately reflects the historical relationship, its usefulness in investment analysis will be limited if  other market participants are also aware of act on this evidence.
+
+Generalizations of Linear Model:
+        Classification problems:
+            logistic regression
+            support vector machines
+        Non-linearity:
+            kernel smoothing
+            splines
+            generalized additive models
+            nearest neighbor
+        Interactions (also capture non-linearities):
+            Tree-based methods
+            bagging
+            random forests
+            boosting
+        Regularized fitting:
+            Ridge regression
+            lasso
 """
 
 import numpy as np
