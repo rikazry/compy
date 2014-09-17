@@ -37,24 +37,54 @@ Assumptions:
         ideal scenario is when predictors are uncorrelated: a balanced design
         problems of correlation:
             variance of all coefficients tends to increase
+                -> TypeII error
             interpretations of effects of changing 1 variable become hazardous
+        detection:
+            no t-test is significant + f-test significant + high R^2
+        correction:
+            omit one or more correlated independent variables:
+                e.g. stepwise
     * The independent variable is uncorrelated with the residuals
     * The expected value of the residual tearm is zero: E(e)=0
     * The variance of the residual term is constant across observations, not heteroskedastic: E(e_i^2)=const
-        unconditional heteroskedasticity:
-            not related to the level (value) of independent variables
-            usually causes no major problems
-        conditional heteroskedasticity:
-            conditional on the independent variables
-            effects:
-                standard errors are usually unreliable estimates
+        2 types:
+            unconditional heteroskedasticity:
+                not related to the level (value) of independent variables
+                usually causes no major problems
+            conditional heteroskedasticity:
+                conditional on the independent variables
+                effects:
+                    standard errors are usually unreliable estimates
                 codfficient estimates aren't affected
                 t-test is therefore affected
                 f-tst is also unreliable
-            detection:
-                examine scatter plots of residuals
-                Breusch-Pagan chi-square test
+        detection:
+            examine scatter plots of residuals
+            Breusch-Pagan chi-square test
+                BP chi2 test = n * R_resid^2 with df = k
+                    R_resid^2 = R^2 from a second regression of the squared residuals
+        correction:
+            calculate robust standard errors (White-corrected standard errors) for t test
+            generalized least squares
     * The residual term is independently distributed, no autocorrelation: E(e_i * e_j) = 0 for i != j
+        2 types:
+            positive serial correlation
+                effect: underestimated standard errors
+                    -> TypeI error in t-test and f-test
+            negative serial correlation
+        detection:
+            residual plot
+            Durbin-Watson statistic
+                DW = sum of squared adjacent residual difference / SSE 
+                    DW -> 2*(1-r) with large sample size
+                    r = correlation of adjacent residuals
+                    homoskedastic and no serial correlation: DW -> 2
+                    positive serial correlation: DW < 2
+                    negative serial correlation: DW > 2
+        correction:
+            adjust coefficient standard errors: Hansen method
+            improve the specification of the model:
+                explicitly incorporate the time-series nature (e.g., include a sesonal term)
     * The residual term is normally distributed
 
 Ordinary Least Square approach: minimizes Sum of Squared Errors (residual)
@@ -98,20 +128,43 @@ Accuracy Assessing:
         F = (RSS / k) / (SSE / (n-1-k))
         F-test is always one-tailed, tests all independent variables as a group
 
-Variable Selection:
-    All Subsets/ Best Subsets Regression:
-        Choose between all based on some criterion that balances training error with model size
-    Forward Selection:
-        1) null model
-        2) fit k simple linear regresions and add the variable with lowest SSE
-        3) add 1 more variable with lowest 2-variable SSE
-        4) stopping rule:
-            eg. when all remaining variables have a p-value above a threshold
-    Backward Selection:
-        1) all variables
-        2) remove the variable with the largest p-value
-        3) remove 1 more variable with the largest p-value in this (k-1)-fit
-        4) stopping rule
+Model Specification:
+    Misspecification:
+        Functional form can be misspecified:
+            Important variables are omitted
+            Variables should be transformed
+            Data is improperly pooled
+        Explanatory variables are correlated with the error term in TS models:
+            A lagged dependent variable is used as an independent variable
+            A function of the dependent variable is used as an independent variable: forecasting the past
+            Independent variables are measured with error
+        Other TS misspecification that result in nonstationarity
+    Variable Selection:
+        All Subsets/ Best Subsets Regression:
+            Choose between all based on some criterion that balances training error with model size
+        Forward Selection:
+            1) null model
+            2) fit k simple linear regresions and add the variable with lowest SSE
+            3) add 1 more variable with lowest 2-variable SSE
+            4) stopping rule:
+                eg. when all remaining variables have a p-value above a threshold
+        Backward Selection:
+            1) all variables
+            2) remove the variable with the largest p-value
+            3) remove 1 more variable with the largest p-value in this (k-1)-fit
+            4) stopping rule
+
+Model Assessment:
+    Is the model correctly specified?
+    Are individual coeefficients statistically significant? (t-test)
+    Is model statistically significant? (F-test)
+    Is heteroskedasticity present?
+        If yes, is it conditional? (Breusch-Pagan Chi-square test)
+            If yes, correct with Wite-corrected standard errors
+    Is serial correlation present? (Durbin-Watson test)
+        If yes, correct with Hansen method to adjust standard errors
+    Does model have significant multicollinearity?
+        If yes, drop one of the corelated variables
 
 Limitations:
     * Parameter Instability: Linear relationships can change over time.
