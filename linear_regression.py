@@ -1,5 +1,7 @@
 """
+=================
 General Concepts:
+=================
 
 ideal / optimal predictor f(x) = E(Y|X=x) with regard to mean-squared prediction error:
     minimizes E[(Y - g(X))^2 | X = x] over all functions g at all points X = x
@@ -28,8 +30,9 @@ Bias-Variance Trade-off of prediction models:
     training set MSE may be biased toward more overfit models
     choosing flexibility based on test set MSE amounts to a bias-variance trade-off
 
-
+==================
 Linear Regression:
+==================
 
 Assumptions:
     * A linear relationship exists between the dependent and independent variables
