@@ -30,6 +30,14 @@ Bias-Variance Trade-off of prediction models:
     training set MSE may be biased toward more overfit models
     choosing flexibility based on test set MSE amounts to a bias-variance trade-off
 
+Flexible vs. Simple:
+    Flexible
+        is good at taking full advantage of large sample size
+        is good at finding non-linear effect
+    Simple
+        is better for small sample size coz it avoids overfitting
+        is better when data is noisy
+
 ==================
 Linear Regression:
 ==================
