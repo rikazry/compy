@@ -12,6 +12,7 @@ multinomial regression (>2 classes):
 Maximum Likelihood Approach: 
     l = product of p(x_i)|{y_i == 1} * product of ( 1 - p(x_i) )|{y_i == 0}
 Case-control sampling:
+    most effective when the prior prob of the classes are very unequal
     slope parameters are accurately estimated
     interseption parameter needs a transformation:
         b0 += ( logit transform of prior prob - logit transform of case/(case+control) )
