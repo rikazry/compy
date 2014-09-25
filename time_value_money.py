@@ -28,10 +28,10 @@ from scipy.optimize import newton
 class FixIncome(object):
    
     def cpt_ear(self, nom_rate, num_comp = 1, cc = False):
-        return _ear(nom_rate, num_comp = 1, cc = False)
+        return _ear(nom_rate, num_comp = num_comp, cc = cc)
 
-    def cpt_fv(self, pv, _y, n):
-        return _fv(pv, _y, n)
+    def cpt_fv(self, pv, n, nom_rate, num_comp = 1, cc = False):
+        return _fv(pv, self.cpt_ear(nom_rate, num_comp = num_comp, cc = cc), n)
 
     def cpt_pv(self, fv, _y, n):
         return _pv(fv, _y, n)
@@ -202,6 +202,12 @@ def _fvf(_y, n):
     future value factor
     """
     return np.power(1 + _y, n)
+
+def _r(pv, fv, n):
+    return np.power(float(fv)/pv, 1/n) - 1
+
+def _n(pv, fv, _y):
+    return np.log(float(fv)/pv) / np.log(1+_y)
 
 def _sumgs(r, n = 0, a1 = 1, series = False):
     """

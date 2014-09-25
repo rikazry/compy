@@ -12,7 +12,7 @@ import numpy as np
 from scipy.optimize import newton
 
 def npv(r, cf0, *args):
-    from tvm import _sumgs
+    from time_value_money import _sumgs
     npv = cf0
     i = 1
     for arg in args:
@@ -98,4 +98,4 @@ def _hpr(begin_value, end_value, *args):
     cf = 0
     for arg in args:
         cf += arg
-    return (end_value - begin_value + cf)/begin_value
+    return (end_value - begin_value + cf)/float(begin_value)
