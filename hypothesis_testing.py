@@ -151,6 +151,13 @@ def test_chi2(var, popvar, n, sig = None, tail = 2):
     p = pscore(x = x, tail = tail, df = df, test = 'chi2')
     return decirule(x, p, sig)
 
+def test_jb(skew, ex_kurt, n, sig = None):
+    df = 2
+    tail = 1
+    jb = n / 6. * (skew**2 + ex_kurt**2 / 4.)
+    p = pscore(x=jb, tail = tail, df = df, test = 'chi2')
+    return decirule(jb, p, sig)
+
 def test_f_raw(a1, a2, sig = None, tail = 1):
     n1, n2 = len(a1), len(a2)
     var1, var2 = np.var(a1, ddof = 1), np.var(a2, ddof = 1)
