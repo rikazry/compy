@@ -134,13 +134,13 @@ def inf_sequence(n, puzzle, solution, x_n, n0=0):
     return t,x
 
 def demo_integral():
-    n = symbols('n', cls = Idx)
     puzzle1 = 1/(1+x**2)
     solutions1 = list()
     solutions1.append("solution:let x = tan(z), then dx = dtan(z) = 1/cos^2(z) * dz")
     solutions1.append(Integral(1/((tan(z)**2+1)*(cos(z)**2))))
     solutions1.append(Integral(1,z))
     integral(puzzle1, solutions1)
+    n = symbols('n')
     puzzle2 = (x**n)*log(x)
     solution2 = list()
     solution2.append('solution: integrate by parts')
@@ -152,6 +152,7 @@ def demo_integral():
     solution2.append('this is an example that sympy got a different result')
     integral(puzzle2, solution2, x)
     I = IndexedBase('I')
+    n = symbols('n', cls = Idx)
     puzzle3 = (log(x))**n
     solution3 = list()
     solution3.append('solution: integrate by parts + induction')
