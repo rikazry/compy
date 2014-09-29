@@ -124,6 +124,6 @@ def inf_sequence(n, puzzle, solution, x_n, n0=0):
     x_n_v = np.vectorize(x_n)
     t = range(n0, n)
     x = x_n_v(t)
-    print 'calculate x_n for n from 0 to %d:' %n
+    print 'calculate x_n for n from %d to %d:' %(n0, n)
     print x
     return t,x
