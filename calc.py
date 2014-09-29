@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pylab as plt
 from scipy.integrate import quad
+from sympy import integrate, init_printing, pprint, Integral, summation,\
+symbols, factorial, tan, cos, log
+from sympy.tensor import IndexedBase, Idx
+from sympy.abc import x, y, z
 
 def i_to_the_i():
     a = 1j**1j
@@ -118,6 +122,7 @@ def inf_series_convergence(n, n0=2):
     plt.plot(t_2, x3_2, label = '1/k^2_integral')
     plt.legend(loc = 2)
     plt.show()
+
 def inf_sequence(n, puzzle, solution, x_n, n0=0):
     print puzzle
     print solution
@@ -127,3 +132,56 @@ def inf_sequence(n, puzzle, solution, x_n, n0=0):
     print 'calculate x_n for n from %d to %d:' %(n0, n)
     print x
     return t,x
+
+def demo_integral():
+    n = symbols('n', cls = Idx)
+    puzzle1 = 1/(1+x**2)
+    solutions1 = list()
+    solutions1.append("solution:let x = tan(z), then dx = dtan(z) = 1/cos^2(z) * dz")
+    solutions1.append(Integral(1/((tan(z)**2+1)*(cos(z)**2))))
+    solutions1.append(Integral(1,z))
+    integral(puzzle1, solutions1)
+    puzzle2 = (x**n)*log(x)
+    solution2 = list()
+    solution2.append('solution: integrate by parts')
+    solution2.append('for n != -1')
+    solution2.append(1/(n+1) * x**(n+1) * log(x) - Integral(1/(n+1) * x**n, x))
+    solution2.append(1/(n+1) * x**(n+1) * log(x) - 1/(n+1)**2 * x**(n+1))
+    solution2.append('for n == -1')
+    solution2.append(log(x)**2/2)
+    solution2.append('this is an example that sympy got a different result')
+    integral(puzzle2, solution2, x)
+    I = IndexedBase('I')
+    puzzle3 = (log(x))**n
+    solution3 = list()
+    solution3.append('solution: integrate by parts + induction')
+    solution3.append(log(x)**n * x - n * Integral(log(x)**(n-1), x))
+    solution3.append('I[n]=')
+    solution3.append(log(x)**n * x - n * I[n-1])
+    solution3.append('I[0]=x')
+    solution3.append('I[1]=')
+    solution3.append(log(x) * x - I[0])
+    solution3.append(x * (log(x) - 1))
+    solution3.append('I[2]=')
+    solution3.append(log(x)**2 * x - 2 * I[1])
+    solution3.append(x * (log(x)**2 - 2*log(x) + 2))
+    n, k = symbols('n, k')
+    solution3.append('I[n]=')
+    solution3.append(x * summation( (-1)**(n-k)*factorial(n)/factorial(k) *
+        log(x)**k, (k, 0, n)))
+    solution3.append('this is an example that sympy could not compute result')
+    integral(puzzle3, solution3, x)
+
+def integral(puzzle, solutions, v = x):
+    init_printing(use_unicode=False, wrap_line=False, no_global=True)
+    print '\npuzzle:'
+    pprint(Integral(puzzle, v))
+    print '\n'
+    for solution in solutions:
+        pprint(solution)
+    I = integrate(puzzle, v)
+    print '\nsympy calculation result:'
+    pprint(I)
+    return I
+
+
