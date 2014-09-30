@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pylab as plt
 from scipy.integrate import quad
-from sympy import integrate, init_printing, pprint, Integral, summation,\
+from sympy import integrate, pprint, Integral, summation,\
 symbols, factorial, tan, cos, log
 from sympy.tensor import IndexedBase, Idx
 from sympy.abc import x, y, z
@@ -174,7 +174,6 @@ def demo_integral():
     integral(puzzle3, solution3, x)
 
 def integral(puzzle, solutions, v = x):
-    init_printing(use_unicode=False, wrap_line=False, no_global=True)
     print '\npuzzle:'
     pprint(Integral(puzzle, v))
     print '\n'
