@@ -38,6 +38,8 @@ def demo_non_homo_linear():
 
 def non_homo_linear(rhs, *cds):
     char_func, eq, rs = homo_linear(*cds)
+    print('\nnon-homogeneous ODE:')
+    pprint(Eq(eq, rhs))
     eq -= rhs
     print('\nsolving non-homogeneous linear equation...\nresult:')
     rs = dsolve(eq)
@@ -54,8 +56,8 @@ def homo_linear(*cds):
             c, d = 1, cd
         char_func += c * y**d
         eq += c * f(x).diff(x, d)
-    print('\nODE:')
-    pprint(eq)
+    print('\nhomogeneous ODE:')
+    pprint(Eq(eq, 0))
     print('\nhomogeneous characteristic function:')
     pprint(char_func)
     print('\nsolving characteristic function...\nresult:')
