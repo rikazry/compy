@@ -4,6 +4,62 @@ from sympy.abc import sigma, rho, X, P
 from sympy.tensor import IndexedBase, Idx
 from sympy.matrices import Matrix, eye, ones
 
+def demo_symetricA():
+    A = Matrix(2,2,[2,-2,-2,5])
+    pprint(A)
+    demo_symetricA_Msquare(A)
+    demo_symetricA_lucholeski(A) 
+
+def demo_symetricA_lucholeski(A):
+    print "\n2)Any symmetric matrix A can be choleski decomposed as A = L*L.T:\n"\
+            "L is lower triangular matris:\n"
+    n = A.rows
+    l = IndexedBase('l')
+    def lower(i, j):
+        if i >= j:
+            return l[i,j]
+        else:
+            return 0
+    L = Matrix(n, n, lambda i, j: lower(i,j))
+    pprint(L)
+    print "\nthen L * L.T:\n"
+    pprint(L*L.T)
+    print "\nL can be solved up->down, left->right:"
+    Lmat = A.cholesky()
+    pprint(Lmat)
+    print "\nL * L.T:\n"
+    pprint(Lmat*Lmat.T)
+
+def demo_symetricA_Msquare(A):
+    print "\n1)Any symmetric matrix A can be written as A = M^2:\n"\
+            "<= any symetric matrix A can be diagonalized as A = Q * D * Q.inv()\n"\
+            "<= D is diagonal matrix with eigen values\n"\
+            "   Q is eigen vectors with norm 1\n"\
+            "   Q.inv() == Q.T\n"\
+            "first take a look as eigen vectors:\n"
+    pprint(A.eigenvects())
+    print "\nthen sympy diagonalized result:\n"
+    pprint(A.diagonalize())
+    d = A.diagonalize()[1]
+    q = A.diagonalize()[0]
+    q = Matrix(q.rows, q.cols, lambda i, j: q[:,j].normalized()[i])
+    print "\nthen normalized Q:\n"
+    pprint(q)
+    print "\nthen the transpose of Q:\n"
+    pprint(q.T)
+    print "\nthen the inverse of Q:\n"
+    pprint(q.inv())
+    print "\nthen Q * D * Q.inv():\n"
+    pprint(q*d*q.inv())
+    print "\nif we define a new diagonal matrix Droot:\n"
+    d = d.applyfunc(lambda x: x**.5)
+    pprint(d)
+    print "\nthen let M = Q * Droot * Q.inv():\n"
+    m = q*d*q.inv()
+    pprint(m)
+    print "\nthen A = M*M:\n"
+    pprint(q*d*d*q.inv())
+
 def demo_eigen_number():
     m = Matrix(3,3,[2,1,0,0,2,1,0,0,2])
     pprint(m)
