@@ -73,7 +73,7 @@ def inf_power_equal2(n):
           '\nNext calculate l,s.t.\n'\
           'l = sqrt(2)^l => l^(1/l) = 2^(1/2)\n'\
           "f(x) = x^(1/x) with f'(x) = f(x)*(1-lnx)/(x^2)\n"\
-          "f'(x) = 0 => x = e => root for f(l) = f(2) is l1=2 or l2>3\n"\
+          "f'(x) = 0 => x = e => root for f(l) = f(2) is l1=2 or l2>e\n"\
           "upperbound of x_n => l=2\n"
     def x_n(n):
         x = np.sqrt(2)
