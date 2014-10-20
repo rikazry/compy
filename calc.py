@@ -32,7 +32,7 @@ def e_to_pi_compare_pi_to_e():
           "f'(e) = 0\n"\
           "f'(x) < 0 for x > e, e.g. x = pi\n"\
           "=> f(e) > f(pi)\n"\
-          "=> e^pi > pi\n"
+          "=> e^pi > pi^e\n"
     b = True
     print 'derived comparison e^pi > pi^e ?:', b
     print '\n compare result equal'
