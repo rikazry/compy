@@ -71,7 +71,7 @@ def demo_eigen_number():
             "but it's possible to have less than multiplication number of eigen vectors\n"\
             "the given matrix is an example with only 1 eigen vector:\n"
     pprint(m.eigenvects())
-    print "to se this for any vector v we can compute M * v:\n"
+    print "to see this for any vector v we can compute M * v:\n"
     v = IndexedBase('v')
     vec = Matrix(m.rows, 1, lambda i, j: v[i+1])
     pprint(vec)
